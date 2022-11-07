@@ -1,3 +1,4 @@
+import time
 import matplotlib.pyplot as plt
 from kneed import KneeLocator
 from sklearn.datasets import make_blobs
@@ -359,11 +360,13 @@ def add_cluster_label_nn(dim_red_type,n_cluster,n_component,cov_type,train_data_
     gmm_test_label = gmm.fit_predict(test_data_reduced)
     x_test_gmm = np.hstack((test_data_reduced,np.atleast_2d(gmm_test_label).T))
 
+    st=time.time()
     nn_gmm= MLPClassifier(
               solver='lbfgs',
               activation='tanh',
               hidden_layer_sizes=(1,))
     nn_gmm.fit(x_train_gmm,y_train)
+    print(time.time() - st)
     gmm_score = f1_score(y_test, nn_km.predict(x_test_gmm))
     print("{} + GMM cluster info + NN testing F1 Score - {}".format(dim_red_type,gmm_score))
     return [km_score,
@@ -505,11 +508,13 @@ x_transformed = tsvd.transform(x_train)
 x_test_transformed=tsvd.transform(x_test)
 
 # NN
+st = time.time()
 nn_tsvd= MLPClassifier(
           solver='lbfgs',
           activation='tanh',
           hidden_layer_sizes=(1,))
 nn_tsvd.fit(x_transformed,y_train)
+print(time.time() - st)
 plot_confusion_matrix(nn_tsvd,
                       x_test_transformed,
                       y_test,
